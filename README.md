@@ -2,7 +2,7 @@
 
 Linux Infrastructure Setup for DDP ehf
 
-Follow these steps on each machine to set up the server (server1) and clients (client1 [Debian] and client2 [CentOS Stream 9]) in the ddp.is domain.
+Follow these steps on each machine to set up the ubuntu server (server1) and clients (client1 [Debian] and client2 [CentOS Stream 9]) in the ddp.is domain.
 1. Configure Hostnames and Domain
 
   Set hostnames: On each VM, edit /etc/hostname to set the short hostname (e.g. server1, client1, client2). Then apply it:
