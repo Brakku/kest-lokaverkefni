@@ -52,10 +52,10 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     Choose manual network config and assign static IP. (192.168.100.10)
 
     Use default settings.
- .
+ ​
 
     sudo nano /etc/netplan/00-installer-config.yaml
- .
+ ​
 
      network:
       version: 2
