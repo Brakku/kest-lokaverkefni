@@ -47,7 +47,7 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     
     Proceed through the installer
     
-    Set hostname to server1.
+    Set hostname to server1.ddp.is
     
     Choose manual network config and assign static IP. (192.168.100.10)
 
@@ -84,7 +84,7 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     
     Installer steps:
     
-    Hostname: client1
+    Hostname: client1.ddp.is
     
     Network: DHCP (default)
 
@@ -98,7 +98,7 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     
     Installer steps:
     
-    Hostname: client2
+    Hostname: client2.ddp.is
     
     Network: DHCP
 
@@ -127,11 +127,11 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     192.168.100.10   server1.ddp.is server1
   
   On clients, include their own entry (e.g. 192.168.100.11 client1.ddp.is client1). This ensures name resolution if DNS is not yet running
-  unix.stackexchange.com
+
   
   
   Set DNS domain: Add the domain name in the resolver config. If using resolvconf, add a line domain ddp.is in /etc/resolvconf/resolv.conf.d/head and run resolvconf -u. Otherwise, add domain ddp.is to /etc/resolv.conf
-  unix.stackexchange.com
+
   This ensures the system recognizes the local domain for unqualified names.
   
 ## 2. Assign Static IP to server1 and Configure DHCP
@@ -145,7 +145,6 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
         gateway 192.168.100.1
   
   This example assumes 192.168.100.1 is the gateway. Restart networking: systemctl restart networking. (On CentOS use /etc/sysconfig/network-scripts/ifcfg-eth0.) The Debian Wiki shows a similar static setup
-  wiki.debian.org
   
   
   Install DHCP server (server1 only):
@@ -170,7 +169,7 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     }
   
   This defines the DHCP scope for the LAN, sets 192.168.100.1 as the gateway, and issues DNS and domain info
-  wiki.debian.org
+
   Restart the DHCP service: systemctl restart isc-dhcp-server.
   
   Client DHCP configuration: On each client, ensure the network interface uses DHCP. For Debian, /etc/network/interfaces might include:
@@ -326,7 +325,7 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
   
   Remove or comment out other pool lines if present. Restart chrony on each client. Verify sync status with chronyc sources (it should list server1.ddp.is and say ^* or similar). Chrony is recommended for time sync on modern Linux
   cloudspinx.com
-    .
+
   
 ## 8. Configure Centralized Syslog (rsyslog)
   
@@ -336,16 +335,16 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     input(type="imudp" port="514")
   
   This tells rsyslog to listen on UDP port 514 for incoming logs
-  docs.redhat.com
-  . Save and restart rsyslog: sudo systemctl restart rsyslog.
+
+  Save and restart rsyslog: sudo systemctl restart rsyslog.
   
   Clients (forward logs): On each client (client1, client2), create /etc/rsyslog.d/60-forward.conf with:
   
     *.* action(type="omfwd" target="server1.ddp.is" port="514" protocol="udp")
   
   This forwards all log facilities to the server via UDP
-  docs.redhat.com
-  . Restart rsyslog on each client. The server will now accumulate client logs (by default in /var/log/syslog or /var/log/messages, or split by hostname if configured). You may further customize filtering or create separate log files per host on the server.
+
+  Restart rsyslog on each client. The server will now accumulate client logs (by default in /var/log/syslog or /var/log/messages, or split by hostname if configured). You may further customize filtering or create separate log files per host on the server.
   
 ## 9. Set up Postfix and Roundcube (Email Server)
   
@@ -373,9 +372,7 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
   
   During Roundcube setup, you’ll be prompted to configure a MySQL database for it; you can create one or let the installer do it. After installation, Roundcube’s config is in /etc/roundcube/config.inc.php. Adjust the $rcmail_config['db_dsnw'] DSN to match your MySQL user. Ensure Apache has Alias /roundcube /var/lib/roundcube and restart Apache: sudo systemctl restart apache2.
   
-  Test Webmail: Access http://server1.ddp.is/roundcube in a browser. You should see a login screen. Use a system user account (created above) to log in. (Roundcube requires Postfix and Dovecot to be set up for full mail functionality
-  linuxbabe.com
-    .)
+  Test Webmail: Access http://server1.ddp.is/roundcube in a browser. You should see a login screen. Use a system user account (created above) to log in. (Roundcube requires Postfix and Dovecot to be set up for full mail functionality.)
   
 ## 10. Configure Shared Printers (CUPS)
   
@@ -386,7 +383,6 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     SystemGroup lpadmin it management
   
   This line (added under the main configuration section) ensures only it and management (and lpadmin) users can manage printers
-  cups.org
   
   
   Restrict printing by group: For each department printer, edit /etc/cups/printers.conf or an ACL file. For example, for a printer called “DeptPrinter”:
@@ -428,8 +424,8 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
 ## 12. Harden Servers: Close Unused Ports and Verify with NMAP
   
   Set default DROP policy: It’s best practice to drop all incoming traffic and explicitly allow needed ports
-  serverfault.com
-  . For example, using iptables on each machine:
+
+  For example, using iptables on each machine:
   
     sudo iptables -P INPUT DROP
     sudo iptables -P FORWARD DROP
@@ -450,8 +446,7 @@ Follow these steps on each machine to set up the ubuntu server (server1) and cli
     sudo iptables -A INPUT -p tcp --dport 3306 -j DROP
   
   Save the rules (e.g. iptables-save > /etc/iptables/rules.v4 or use a service). This leaves only the listed ports open
-  serverfault.com
-  .
+
   
   Verify with nmap: From one machine, scan others to ensure no unintended ports are open. For example:
   
