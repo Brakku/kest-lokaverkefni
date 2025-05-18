@@ -4,6 +4,112 @@ Linux Infrastructure Setup for DDP ehf
 
 Follow these steps on each machine to set up the ubuntu server (server1) and clients (client1 [Debian] and client2 [CentOS Stream 9]) in the ddp.is domain.
 
+
+
+## Prerequisites
+
+    Install VMware Workstation Pro on your host machine (Windows or Linux).
+  
+    Download ISO installers for:
+    
+    Ubuntu Server for server1
+    
+    Debian for client1
+    
+    CentOS Stream 9 for client2
+    
+    Ensure your host has:
+    
+    ≥ 16 GB RAM
+    
+    ≥ 100 GB free disk
+    
+    Internet access for package downloads
+    
+  2. Virtual Network Setup (Host)
+    
+    In VMware, open Virtual Network Editor.
+    
+    Create a Host‑only network (e.g. VMnet2) and disable its DHCP.
+    
+    Create a NAT network (e.g. VMnet8) if you need internet access from your VMs.
+    
+    Attach all three VMs to VMnet2 to isolate your lab network (192.168.100.0/24).
+    
+  3. VM Creation and OS Installation
+    
+  server1 VM
+    
+    Network adapter: Host‑only (VMnet2)
+    Network adapter2: NAT
+    
+    Create a new VM and mount the Ubuntu Server ISO.
+    
+    Proceed through the installer
+    
+    Set hostname to server1.
+    
+    Choose manual network config and assign static IP. (192.168.100.10)
+
+    Use default settings.
+ .
+
+    sudo nano /etc/netplan/00-installer-config.yaml
+ .
+
+     network:
+      version: 2
+      ethernets:
+        ens33:
+          addresses:
+            - 192.168.100.10/24
+          nameservers:
+            addresses:
+              - 192.168.100.10
+            search:
+              - ddp.is
+        ens34: #replace number with correct number found with ip addr show
+          dhcp4: true
+
+   
+
+         
+
+    
+  client1 VM
+    
+    Network adapter: Host‑only (VMnet2)
+    
+    Create VM and mount Debian ISO.
+    
+    Installer steps:
+    
+    Hostname: client1
+    
+    Network: DHCP (default)
+
+    Use default settings.
+    
+  client2 VM
+    
+    Network adapter: Host‑only (VMnet2)
+    
+    Create VM and mount CentOS Stream 9 ISO.
+    
+    Installer steps:
+    
+    Hostname: client2
+    
+    Network: DHCP
+
+    Use default settings.
+
+
+
+
+
+
+
 ## 1. Configure Hostnames and Domain
   
   Set hostnames: On each VM, edit /etc/hostname to set the short hostname (e.g. server1, client1, client2). Then apply it:
